@@ -50,7 +50,7 @@
     
     [self newMethod:@"output"];
     
-    self.newProperty = @"newProperty";
+    self.newProperty = @"newPropertyss";
     
     NSLog(@"newProperty : %@", self.newProperty);
 
