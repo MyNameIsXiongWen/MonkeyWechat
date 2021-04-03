@@ -195,6 +195,11 @@
 
 //消息到来
 %hook CMessageMgr
+
+- (void)onRevokeMsg:(id)arg1 {
+    
+}
+
 - (void)AsyncOnAddMsg:(NSString *)wxid MsgWrap:(CMessageWrap *)wrap {
     %orig;
     NSInteger uiMessageType = [wrap m_uiMessageType];
@@ -300,17 +305,13 @@
 
 @end
 
-%hook BaseMsgContentViewController
-
-- (void)OnRevokeMsg:(id)arg1 MsgWrap:(id)arg2 ResultCode:(unsigned int)arg3 ResultMsg:(id)arg4 EducationMsg:(id)arg5 {
-    
-}
-
-- (void)OnMsgRevoked:(id)arg1 n64MsgId:(long long)arg2 {
-    
-}
-
-%end
+//%hook BaseMsgContentViewController
+//
+//- (void)OnMsgRevoked:(id)arg1 n64MsgId:(long long)arg2 {
+////    %orig;
+//}
+//
+//%end
 
 @interface BaseMsgContentLogicController : NSObject {
     BaseMsgContentViewController *m_viewController;
@@ -329,12 +330,15 @@
 
 - (void)ViewDidInit {
     %orig;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self onNewMassSend:nil];
-    });
+    if ([[LLRedManager sharedInstance] isAutoRed]) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self onNewMassSend:nil];
+        });
+    }
 }
 
 - (void)OnAddMsg:(id)arg1 MsgWrap:(id)arg2 {
+    %orig;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         BaseMsgContentViewController *vvv = (BaseMsgContentViewController *)[self valueForKey:@"m_viewController"];
         [vvv onBackButtonClicked:nil];
@@ -397,7 +401,6 @@
 - (void)addCell:(id)arg1;
 
 @end
-
 
 @interface MMTableView : UITableView
 
